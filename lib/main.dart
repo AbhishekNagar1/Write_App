@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: ((context) => TodoProvider()),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Write',
         theme: ThemeData(
           // This is the theme of your application.
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
           //
           // This works for code too, not just values: Most code changes can be
           // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
           useMaterial3: true,
         ),
         routes: {
