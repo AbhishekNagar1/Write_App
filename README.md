@@ -1,16 +1,48 @@
-# todo_app_appwrite
+# Write
 
-A new Flutter project.
+This is a simple task management app. The app allows users to create, update, delete, and view tasks as per priorities. The app also provides user authentication and local data storage using Appwrite. The user interface is clean and responsive, built using Flutter with Material Design principles.
+
+## Features
+
+- **User Authentication**: 
+  - Appwrite email/password authentication for user login and registration.
+  - Display of error messages for invalid credentials.
+
+- **Task Management**:
+  - Users can create, edit, delete, view tasks and set priorities.
+  - Each task includes: 
+    - Title
+    - Description
+    - Due date
+    - Priority (low, medium, high)
+  - Tasks are stored in Firebase or any other backend of your choice.
+
+- **Task Filtering**:
+  - Filter tasks by priority and completion status.
+  - Tasks are displayed in a list format, sorted by due date (earliest to latest).
+
+- **User Interface**:
+  - A clean and responsive UI designed with Material Design principles.
+  - The app is visually appealing on all Web,iOS and Android devices.
+
+## Technologies Used
+
+- **Flutter**: Cross-platform mobile development framework for building the app.
+- **Provider**: State management solution used for managing app state efficiently.
+- **Appwrite**: Backend-as-a-Service (BaaS) for handling backend operations.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+1. **Flutter**: Make sure Flutter is installed on your system. If not, follow the instructions on the official [Flutter website](https://flutter.dev/docs/get-started/install).
+3. **Appwrite**: Set up an Appwrite project if you plan to use it for backend services.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Apk File:** dwdk
+- If Error in Authentication, then use Dummy credentials
+  - **Email:** test@developer.com
+  - **Password:** Test@123
+ 
+### Thank You
