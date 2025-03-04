@@ -29,12 +29,20 @@ Future<String> createUser(String name, String email, String password) async {
   }
 }
 
-// Login
+
 Future<bool> loginUser(String email, String password) async {
   try {
     final prefs = await SharedPreferences.getInstance();
 
-    // Check if the credentials match the hardcoded developer login
+    // 🔴 Destroy all active sessions before logging in
+    try {
+      await account.deleteSessions();
+      print("All previous sessions deleted successfully.");
+    } catch (e) {
+      print("No active session found or session deletion failed: $e");
+    }
+
+    // 🔵 Developer Hardcoded Login (Test Mode)
     if (email == devEmail && password == devPassword) {
       await UserSavedData.saveEmail(email);
       await prefs.setString('session', 'dev_session');
@@ -43,17 +51,17 @@ Future<bool> loginUser(String email, String password) async {
       return true;
     }
 
-    // Proceed with normal authentication (Appwrite)
+    // 🔵 CREATE NEW LOGIN SESSION
     final user = await account.createEmailSession(
       email: email,
       password: password,
     );
 
-    await prefs.setString('session', user.$id); // Store session ID
+    await prefs.setString('session', user.$id);
     await prefs.setInt('lastLogin', DateTime.now().millisecondsSinceEpoch);
-
     await UserSavedData.saveEmail(email);
-    print("User logged in");
+
+    print("User logged in successfully.");
     return true;
   } on AppwriteException catch (e) {
     print("Login failed: ${e.message}");
@@ -61,19 +69,21 @@ Future<bool> loginUser(String email, String password) async {
   }
 }
 
-// Logout the user
+
+
+
+// Logout the User
 Future<void> logoutUser() async {
   try {
     final prefs = await SharedPreferences.getInstance();
     String? session = prefs.getString('session');
 
-    if (session != 'dev_session') {
+    if (session != null && session != 'dev_session') {
       await account.deleteSessions();
     }
 
-    await prefs.remove('session'); // Clear session data
-    await prefs.remove('lastLogin');
-    print("User Logged Out");
+    await prefs.clear(); // Clear all stored session data
+    print("User Logged Out Successfully");
   } on AppwriteException catch (e) {
     print("Logout failed: ${e.message}");
   }
@@ -91,8 +101,9 @@ Future<bool> checkUserAuth() async {
     int currentTime = DateTime.now().millisecondsSinceEpoch;
     int oneWeekInMillis = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+    // Auto logout after 1 week of inactivity
     if (currentTime - lastLogin > oneWeekInMillis) {
-      await logoutUser(); // Auto logout after 1 week
+      await logoutUser();
       return false;
     }
 
@@ -101,7 +112,8 @@ Future<bool> checkUserAuth() async {
       return true;
     }
 
-    await account.get(); // Verify session with Appwrite
+    // Verify session with Appwrite
+    await account.get();
     return true;
   } on AppwriteException catch (e) {
     print("Authentication check failed: ${e.message}");

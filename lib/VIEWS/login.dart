@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_app_appwrite/auth.dart';
 
 class LoginPage extends StatelessWidget {
@@ -63,9 +64,11 @@ class LoginPage extends StatelessWidget {
                     if (value) {
                       Navigator.pushReplacementNamed(context, '/home');
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Invalid email or password"),
-                      ));
+                      Fluttertoast.showToast(
+                        msg: "Invalid email or password",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                      );
                     }
                   });
                 },
