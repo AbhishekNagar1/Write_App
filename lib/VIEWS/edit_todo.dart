@@ -15,15 +15,25 @@ class _EditTodoState extends State<EditTodo> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descController = TextEditingController();
   String _selectedPriority = 'medium';
+  late String todoId; // Store the ID separately
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final Document arguments =
-    ModalRoute.of(context)?.settings.arguments as Document;
-    titleController.text = arguments.data['title'];
-    descController.text = arguments.data['description'];
-    _selectedPriority = arguments.data['priority'] ?? 'medium';
+    final arguments = ModalRoute.of(context)?.settings.arguments;
+    if (arguments is Document) {
+      titleController.text = arguments.data['title'];
+      descController.text = arguments.data['description'];
+      _selectedPriority = arguments.data['priority'] ?? 'medium';
+      todoId = arguments.$id; // Extract ID
+    } else {
+      Fluttertoast.showToast(
+        msg: "Error: Invalid Todo Data",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -63,27 +73,27 @@ class _EditTodoState extends State<EditTodo> {
                   prefixIcon: const Icon(Icons.description),
                 ),
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedPriority,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  labelText: 'Priority',
-                  prefixIcon: const Icon(Icons.priority_high),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'high', child: Text("High Priority")),
-                  DropdownMenuItem(value: 'medium', child: Text("Medium Priority")),
-                  DropdownMenuItem(value: 'low', child: Text("Low Priority")),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPriority = value!;
-                  });
-                },
-              ),
+              // const SizedBox(height: 16),
+              // DropdownButtonFormField<String>(
+              //   value: _selectedPriority,
+              //   decoration: InputDecoration(
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(12),
+              //     ),
+              //     labelText: 'Priority',
+              //     prefixIcon: const Icon(Icons.priority_high),
+              //   ),
+              //   items: const [
+              //     DropdownMenuItem(value: 'high', child: Text("High Priority")),
+              //     DropdownMenuItem(value: 'medium', child: Text("Medium Priority")),
+              //     DropdownMenuItem(value: 'low', child: Text("Low Priority")),
+              //   ],
+              //   onChanged: (value) {
+              //     setState(() {
+              //       _selectedPriority = value!;
+              //     });
+              //   },
+              // ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -94,19 +104,27 @@ class _EditTodoState extends State<EditTodo> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    provider.updateTodo(
-                      titleController.text,
-                      descController.text,
-                      (ModalRoute.of(context)?.settings.arguments as Document).$id,
-                      _selectedPriority,
-                    );
-                    Fluttertoast.showToast(
-                      msg: "Todo Updated Successfully",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                    );
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    try {
+                      await provider.updateTodo(
+                        todoId,
+                        titleController.text,
+                        descController.text,
+                        _selectedPriority,
+                      );
+                      Fluttertoast.showToast(
+                        msg: "Todo Updated Successfully",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                      );
+                      Navigator.pop(context);
+                    } catch (e) {
+                      Fluttertoast.showToast(
+                        msg: "Failed to update Todo: $e",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                      );
+                    }
                   },
                   child: const Text("Update Task", style: TextStyle(fontSize: 16)),
                 ),

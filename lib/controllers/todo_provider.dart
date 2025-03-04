@@ -9,8 +9,8 @@ class TodoProvider extends ChangeNotifier {
     readTodos();
   }
 
-  String databaseId = "648dd8c248189329a1ec";
-  String collectionId = "648dd8ceef572e20c875";
+  final String databaseId = "648dd8c248189329a1ec";
+  final String collectionId = "648dd8ceef572e20c875";
   final Databases database = Databases(client);
 
   List<Document> _todos = [];
@@ -19,7 +19,7 @@ class TodoProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get checkLoading => _isLoading;
 
-  Future readTodos({String priority = 'all'}) async {
+  Future<void> readTodos({String priority = 'all'}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -38,74 +38,90 @@ class TodoProvider extends ChangeNotifier {
 
       _todos = data.documents;
     } catch (e) {
-      print(e);
+      print("Error reading todos: $e");
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future createNewTodo(String title, String description, String priority) async {
+  Future<void> createNewTodo(String title, String description, String priority) async {
     final email = UserSavedData.getEmail;
-    await database.createDocument(
-      databaseId: databaseId,
-      collectionId: collectionId,
-      documentId: ID.unique(),
-      data: {
-        "title": title,
-        "description": description,
-        "isDone": false,
-        "priority": priority,
-        'createdBy': email
-      },
-    );
-
-    readTodos();
-  }
-
-  Future markCompleted(String id, bool isDone) async {
-    await database.updateDocument(
-      databaseId: databaseId,
-      collectionId: collectionId,
-      documentId: id,
-      data: {"isDone": isDone},
-    );
-
-    readTodos();
-  }
-
-  Future updateTodo(String id, String title, String desc, String priority) async {
-    await database.updateDocument(
-      databaseId: databaseId,
-      collectionId: collectionId,
-      documentId: id,
-      data: {"title": title, "description": desc, "priority": priority},
-    );
-
-    readTodos();
-  }
-
-  Future deleteTodo(String id) async {
-    await database.deleteDocument(
+    try {
+      await database.createDocument(
         databaseId: databaseId,
         collectionId: collectionId,
-        documentId: id
-    );
+        documentId: ID.unique(),
+        data: {
+          "title": title,
+          "description": description,
+          "isDone": false,
+          "priority": priority,
+          'createdBy': email
+        },
+      );
+      readTodos();
+    } catch (e) {
+      print("Error creating todo: $e");
+    }
+  }
 
-    readTodos();
+  Future<void> markCompleted(String id, bool isDone) async {
+    try {
+      await database.updateDocument(
+        databaseId: databaseId,
+        collectionId: collectionId,
+        documentId: id,
+        data: {"isDone": isDone},
+      );
+      readTodos();
+    } catch (e) {
+      print("Error marking todo as completed: $e");
+    }
+  }
+
+  Future<void> updateTodo(String id, String title, String desc, String priority) async {
+    try {
+      await database.updateDocument(
+        databaseId: databaseId,
+        collectionId: collectionId,
+        documentId: id,
+        data: {"title": title, "description": desc, "priority": priority},
+      );
+      readTodos();
+    } catch (e) {
+      print("Error updating todo: $e");
+    }
+  }
+
+  Future<void> deleteTodo(String id) async {
+    try {
+      await database.deleteDocument(
+        databaseId: databaseId,
+        collectionId: collectionId,
+        documentId: id,
+      );
+      readTodos();
+    } catch (e) {
+      print("Error deleting todo: $e");
+    }
   }
 
   int getCompletedLength() {
     return _todos.where((todo) => todo.data['isDone'] == true).length;
   }
 
-  Future deleteAllTodos() async {
+  Future<void> deleteAllTodos() async {
     for (var todo in _todos) {
-      await database.deleteDocument(
-        databaseId: databaseId,
-        collectionId: collectionId,
-        documentId: todo.$id,
-      );
+      try {
+        await database.deleteDocument(
+          databaseId: databaseId,
+          collectionId: collectionId,
+          documentId: todo.$id,
+        );
+      } catch (e) {
+        print("Error deleting all todos: $e");
+      }
     }
     readTodos();
   }
