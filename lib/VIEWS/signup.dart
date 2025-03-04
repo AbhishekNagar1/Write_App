@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_app_appwrite/auth.dart';
 
 class SignUpPage extends StatelessWidget {
@@ -79,8 +80,11 @@ class SignUpPage extends StatelessWidget {
                     if (value == 'success') {
                       Navigator.pop(context); // Navigate to Login page after success
                     } else {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(value)));
+                      Fluttertoast.showToast(
+                        msg: value,
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                      );
                     }
                   });
                 },
