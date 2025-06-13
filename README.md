@@ -1,5 +1,11 @@
 # Write
 
+<div align="center">
+  <a href="https://license-instructions.netlify.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🚨-READ%20BEFORE%20FORKING-red?style=for-the-badge&labelColor=darkred" alt="Read Before Forking">
+  </a>
+</div>
+
 This is a simple task management app. The app allows users to create, update, delete, and view tasks as per priorities. The app also provides user authentication and local data storage using Appwrite. The user interface is clean and responsive, built using Flutter with Material Design principles.
 
 ## Features
